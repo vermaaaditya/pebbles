@@ -1,0 +1,25 @@
+{
+  "name": "pebbles-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pebbles — Autonomous AI Teammates with Governed Authority",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspace=@pebbles/backend",
+    "start:mcp": "npm run start --workspace=@pebbles/mcp-server",
+    "start:backend": "npm run dev --workspace=@pebbles/backend",
+    "start:frontend": "npm run dev --workspace=@pebbles/frontend"
+  },
+  "keywords": [
+    "pebbles",
+    "ai-agents",
+    "armoriq",
+    "mcp",
+    "governance"
+  ],
+  "author": "Pebbles Team",
+  "license": "MIT"
+}
