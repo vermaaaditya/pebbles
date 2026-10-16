@@ -114,7 +114,7 @@ export interface TaskRecord {
   updatedAt: string;
 }
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '') + '/api';
 
 export async function fetchHealth(): Promise<HealthInfo> {
   const res = await fetch(`${API_BASE}/health`);
