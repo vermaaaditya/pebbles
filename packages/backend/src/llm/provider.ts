@@ -109,7 +109,49 @@ export class GoogleGeminiLlmProvider implements ILlmProvider {
   }
 }
 
+export class GroqLlmProvider implements ILlmProvider {
+  constructor(private readonly apiKey: string, private readonly model: string = 'openai/gpt-oss-120b') {}
+
+  public isLiveConfigured(): boolean {
+    return Boolean(this.apiKey && this.apiKey.length > 5);
+  }
+
+  public getProviderName(): string {
+    return `Groq (${this.model})`;
+  }
+
+  public async complete(messages: LlmMessage[], options?: LlmCompletionOptions): Promise<string> {
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: this.model,
+        messages: messages.map(m => ({ role: m.role, content: m.content })),
+        temperature: options?.temperature ?? 0.2,
+        max_tokens: options?.maxTokens ?? 2048,
+        response_format: options?.jsonMode ? { type: 'json_object' } : undefined,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq API error (${response.status}): ${errText}`);
+    }
+
+    const data: any = await response.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+}
+
 export function createLlmProvider(config: AppConfig): ILlmProvider {
+  if (config.llm.provider === 'groq' && config.llm.apiKey) {
+    return new GroqLlmProvider(config.llm.apiKey, config.llm.model);
+  }
   if (config.llm.provider === 'google' && config.llm.apiKey) {
     return new GoogleGeminiLlmProvider(config.llm.apiKey, config.llm.model);
   }

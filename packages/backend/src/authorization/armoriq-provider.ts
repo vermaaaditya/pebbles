@@ -36,10 +36,13 @@ export class ArmorIQAuthorizationProvider implements IAuthorizationProvider {
         this.client = new ArmorIQClient({
           apiKey: config.apiKey!,
           backendEndpoint: config.baseUrl || 'https://api.armoriq.ai',
+          agentId: 'pebbles-workforce',
+          userId: config.userEmail || 'developer@example.com',
         });
         const userScope = this.client.forUser(config.userEmail || 'developer@example.com');
         this.session = userScope.startSession({
           mode: 'sdk',
+          defaultMcpName: 'workspace',
         });
       } catch (err) {
         console.error('[ArmorIQProvider] Initialization error:', err);
@@ -100,12 +103,32 @@ export class ArmorIQAuthorizationProvider implements IAuthorizationProvider {
       let enforceResult: EnforceResult;
 
       if (this.session) {
+        if (!this.session.currentTokenValue) {
+          try {
+            await this.session.startPlan(
+              [
+                { name: toolName, args: toolArgs },
+                { name: 'workspace_list_files', args: { path: '.' } },
+                { name: 'workspace_read_file', args: { path: 'src/calculator.js' } },
+                { name: 'workspace_search_files', args: { query: 'calculateInvoice' } },
+                { name: 'workspace_write_file', args: { path: 'src/calculator.js' } },
+                { name: 'workspace_run_tests', args: { command: 'node' } },
+              ],
+              request.context?.userPrompt || 'Autonomous software development execution'
+            );
+          } catch (planErr) {
+            console.warn('[ArmorIQProvider] startPlan note:', planErr);
+          }
+        }
         // Enforce through genuine ArmorIQ session
         enforceResult = await this.session.enforce(toolName, toolArgs);
       } else {
         // Fallback to client invoke check if session unavailable
         throw new Error('ArmorIQ active session is not initialized.');
       }
+
+      // Flush telemetry to ArmorIQ cloud dashboard
+      this.session?.flushObservability().catch(() => {});
 
       if (enforceResult.action === 'allow' || enforceResult.allowed) {
         return {

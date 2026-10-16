@@ -17,7 +17,7 @@ export interface AppConfig {
     baseUrl?: string;
   };
   llm: {
-    provider: 'google' | 'anthropic' | 'openai' | 'mock';
+    provider: 'groq' | 'google' | 'anthropic' | 'openai' | 'mock';
     apiKey?: string;
     model?: string;
   };
@@ -41,7 +41,7 @@ export function loadConfig(): AppConfig {
 
   const llmProvider = (process.env.LLM_PROVIDER || 'mock') as AppConfig['llm']['provider'];
   const llmApiKey = process.env.LLM_API_KEY;
-  const llmModel = process.env.LLM_MODEL || 'gemini-1.5-pro';
+  const llmModel = process.env.LLM_MODEL || (llmProvider === 'groq' ? 'openai/gpt-oss-120b' : 'gemini-1.5-pro');
 
   const defaultSandbox = path.resolve(process.cwd(), 'workspace-sandbox/sample-repo');
   const sandboxPath = process.env.WORKSPACE_SANDBOX_PATH
