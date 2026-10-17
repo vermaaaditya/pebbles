@@ -1,16 +1,5 @@
 import React, { useState } from 'react';
-import {
-  FileCode,
-  CheckCircle2,
-  XCircle,
-  FileText,
-  Shield,
-  Terminal,
-  Copy,
-  Check,
-  Code2,
-  Eye,
-} from 'lucide-react';
+import { FileCode, FileText, Terminal, Shield, Copy, Check } from 'lucide-react';
 import { TaskRecord } from '../api/client';
 
 interface TaskOutputProps {
@@ -31,7 +20,6 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Sample diff representation for modified files
   const getDiffLines = (fileName: string) => {
     if (fileName.includes('calculator.py')) {
       return [
@@ -44,88 +32,76 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
       ];
     }
     return [
-      { type: 'ctx', text: `--- ${fileName} (before)` },
-      { type: 'add', text: `+++ ${fileName} (sandboxed modification applied)` },
+      { type: 'ctx', text: `--- a/${fileName}` },
+      { type: 'add', text: `+++ b/${fileName} (sandboxed modification applied)` },
       { type: 'ctx', text: '@@ Verified and inspected by Pebbles Builder Agent @@' },
     ];
   };
 
   return (
-    <div className="flex flex-col h-full bg-pebble-950/90 border border-pebble-800/80 rounded-xl overflow-hidden shadow-inner backdrop-blur-sm">
+    <div className="flex flex-col h-full bg-zinc-950 border border-zinc-800 font-mono text-xs">
       {/* Top Tab Bar */}
-      <div className="px-4 py-2.5 bg-pebble-900/80 border-b border-pebble-800/80 flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="px-3 py-2 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setTab('report')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 uppercase text-[11px] border transition-none font-bold ${
               tab === 'report'
-                ? 'bg-pebble-800 text-white border border-pebble-700 shadow-sm'
-                : 'text-pebble-400 hover:text-white'
+                ? 'bg-zinc-100 text-black border-zinc-100'
+                : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <FileText className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Final Report</span>
+            [01: REPORT]
           </button>
 
           <button
             onClick={() => setTab('changes')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 uppercase text-[11px] border transition-none font-bold ${
               tab === 'changes'
-                ? 'bg-pebble-800 text-white border border-pebble-700 shadow-sm'
-                : 'text-pebble-400 hover:text-white'
+                ? 'bg-zinc-100 text-black border-zinc-100'
+                : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <FileCode className="w-3.5 h-3.5 text-amber-400" />
-            <span>Changed Files ({task.changedFiles.length})</span>
+            [02: DIFF ({task.changedFiles.length})]
           </button>
 
           <button
             onClick={() => setTab('tests')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 uppercase text-[11px] border transition-none font-bold ${
               tab === 'tests'
-                ? 'bg-pebble-800 text-white border border-pebble-700 shadow-sm'
-                : 'text-pebble-400 hover:text-white'
+                ? 'bg-zinc-100 text-black border-zinc-100'
+                : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Test Execution</span>
-            {task.testResults && (
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  task.testResults.passed ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
-                }`}
-              />
-            )}
+            [03: TESTS]
           </button>
 
           <button
             onClick={() => setTab('evidence')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 uppercase text-[11px] border transition-none font-bold ${
               tab === 'evidence'
-                ? 'bg-pebble-800 text-white border border-pebble-700 shadow-sm'
-                : 'text-pebble-400 hover:text-white'
+                ? 'bg-zinc-100 text-black border-zinc-100'
+                : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <Shield className="w-3.5 h-3.5 text-violet-400" />
-            <span>Evidence Trail ({task.evidence.length})</span>
+            [04: EVIDENCE ({task.evidence.length})]
           </button>
         </div>
 
-        {/* Copy button when in Report tab */}
         {tab === 'report' && task.finalReport && (
           <button
             onClick={handleCopyReport}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-pebble-800 hover:bg-pebble-700 text-pebble-300 hover:text-white text-[11px] font-mono transition-all border border-pebble-700"
+            className="flex items-center gap-1.5 px-2 py-0.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-[10px] uppercase font-bold transition-none"
           >
             {copied ? (
               <>
-                <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-emerald-400">Copied</span>
+                <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                <span className="text-emerald-400">COPIED</span>
               </>
             ) : (
               <>
                 <Copy className="w-3 h-3" />
-                <span>Copy Markdown</span>
+                <span>COPY_REPORT</span>
               </>
             )}
           </button>
@@ -133,28 +109,23 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
         {/* REPORT TAB */}
         {tab === 'report' && (
-          <div className="space-y-4">
+          <div>
             {task.finalReport ? (
-              <div className="rounded-xl border border-pebble-800/90 bg-pebble-900/60 overflow-hidden shadow-sm">
-                <div className="flex items-center gap-1.5 px-4 py-2 bg-pebble-950/80 border-b border-pebble-800/80">
-                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                  <span className="ml-2 text-[11px] text-pebble-400 font-mono">
-                    PEBBLES_GOVERNANCE_CERTIFICATION.md
-                  </span>
+              <div className="border border-zinc-800 bg-zinc-950">
+                <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800 text-[10px] text-zinc-500">
+                  <span>FILE: PEBBLES_GOVERNANCE_CERTIFICATION.md</span>
+                  <span>STATUS: CERTIFIED</span>
                 </div>
-                <div className="p-4 text-xs font-mono whitespace-pre-wrap leading-relaxed text-pebble-200 selection:bg-cyan-500/30 selection:text-white">
+                <div className="p-4 text-xs font-mono whitespace-pre-wrap leading-relaxed text-zinc-200">
                   {task.finalReport}
                 </div>
               </div>
             ) : (
-              <div className="h-44 flex flex-col items-center justify-center text-pebble-500 text-xs gap-2">
-                <FileText className="w-8 h-8 text-pebble-700" />
-                <span>Final report will be compiled by Lead Pebble upon task completion.</span>
+              <div className="h-40 flex items-center justify-center text-zinc-600 italic">
+                AWAITING FINAL GOVERNANCE CERTIFICATION REPORT...
               </div>
             )}
           </div>
@@ -162,57 +133,48 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
 
         {/* CHANGES & CODE DIFF TAB */}
         {tab === 'changes' && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {task.changedFiles.length === 0 ? (
-              <div className="h-44 flex items-center justify-center text-pebble-500 text-xs italic">
-                No files modified by Builder Pebble yet.
+              <div className="h-40 flex items-center justify-center text-zinc-600 italic">
+                NO_FILES_MODIFIED_IN_SANDBOX
               </div>
             ) : (
-              <div className="space-y-3">
-                {/* File Pill Selector */}
-                <div className="flex items-center gap-2 flex-wrap">
+              <div className="space-y-2">
+                <div className="flex items-center gap-1 flex-wrap">
                   {task.changedFiles.map((file) => (
                     <button
                       key={file}
                       onClick={() => setSelectedDiffFile(file)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
+                      className={`px-2 py-1 text-xs border uppercase font-mono transition-none ${
                         (selectedDiffFile || task.changedFiles[0]) === file
-                          ? 'bg-cyan-950/80 text-cyan-300 border-cyan-500/50 shadow-sm'
-                          : 'bg-pebble-900/60 text-pebble-300 border-pebble-800 hover:border-pebble-700'
+                          ? 'bg-zinc-800 border-zinc-400 text-white font-bold'
+                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
-                      <FileCode className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>{file}</span>
-                      <span className="text-[10px] bg-emerald-950 text-emerald-400 px-1.5 py-0.2 rounded border border-emerald-800">
-                        Modified
-                      </span>
+                      FILE: {file} [MODIFIED]
                     </button>
                   ))}
                 </div>
 
-                {/* Visual Code Diff Container */}
-                <div className="rounded-xl border border-pebble-800/90 bg-pebble-950 overflow-hidden font-mono text-xs">
-                  <div className="flex items-center justify-between px-4 py-2 bg-pebble-900/90 border-b border-pebble-800/80 text-[11px] text-pebble-400">
-                    <div className="flex items-center gap-2">
-                      <Code2 className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Unified Diff: {selectedDiffFile || task.changedFiles[0]}</span>
-                    </div>
-                    <span className="text-emerald-400 font-medium">✓ Syntax Verified</span>
+                <div className="border border-zinc-800 bg-zinc-950 font-mono text-xs">
+                  <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800 text-[10px] text-zinc-500">
+                    <span>DIFF // {selectedDiffFile || task.changedFiles[0]}</span>
+                    <span className="text-emerald-400">SYNTAX: VERIFIED</span>
                   </div>
 
-                  <div className="p-3 space-y-0.5 overflow-x-auto">
+                  <div className="p-2 space-y-0.5 overflow-x-auto text-[11px]">
                     {getDiffLines(selectedDiffFile || task.changedFiles[0]).map((line, idx) => (
                       <div
                         key={idx}
-                        className={`px-3 py-1 rounded flex items-center gap-3 ${
+                        className={`px-2 py-0.5 flex items-center gap-3 ${
                           line.type === 'add'
-                            ? 'bg-emerald-950/40 text-emerald-300 border-l-2 border-emerald-500'
+                            ? 'bg-emerald-950/50 text-emerald-300 border-l border-emerald-500'
                             : line.type === 'del'
-                            ? 'bg-rose-950/40 text-rose-300 border-l-2 border-rose-500 line-through opacity-80'
-                            : 'text-pebble-400'
+                            ? 'bg-rose-950/50 text-rose-300 border-l border-rose-500 line-through'
+                            : 'text-zinc-400'
                         }`}
                       >
-                        <span className="text-pebble-600 select-none w-6 text-right text-[10px]">
+                        <span className="text-zinc-600 select-none w-5 text-right text-[10px]">
                           {idx + 1}
                         </span>
                         <span className="whitespace-pre">{line.text}</span>
@@ -229,58 +191,36 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
         {tab === 'tests' && (
           <div>
             {!task.testResults ? (
-              <div className="h-44 flex items-center justify-center text-pebble-500 text-xs italic">
-                No test suite executed yet.
+              <div className="h-40 flex items-center justify-center text-zinc-600 italic">
+                NO_TEST_SUITE_EXECUTED
               </div>
             ) : (
-              <div className="space-y-3 font-mono text-xs">
-                {/* Terminal Header Info */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-pebble-900/80 border border-pebble-800 shadow-sm">
-                  <div className="flex items-center gap-2.5">
-                    {task.testResults.passed ? (
-                      <div className="p-1 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-500/30">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                    ) : (
-                      <div className="p-1 rounded-md bg-rose-950 text-rose-400 border border-rose-500/30">
-                        <XCircle className="w-4 h-4" />
-                      </div>
-                    )}
-                    <div>
-                      <div className="text-white font-semibold flex items-center gap-2">
-                        <span>{task.testResults.command}</span>
-                        <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${
-                            task.testResults.passed
-                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                              : 'bg-rose-950 text-rose-300 border border-rose-800'
-                          }`}
-                        >
-                          {task.testResults.passed ? 'PASSED' : 'FAILED'}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-pebble-400">
-                        Exit Status: {task.testResults.passed ? '0 (Success)' : '1 (Failed)'}
-                      </div>
-                    </div>
+              <div className="space-y-2 font-mono text-xs">
+                <div className="flex items-center justify-between p-2.5 bg-zinc-900 border border-zinc-800">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`px-1.5 py-0.5 text-[10px] uppercase font-bold border ${
+                        task.testResults.passed
+                          ? 'bg-emerald-950 text-emerald-400 border-emerald-700'
+                          : 'bg-rose-950 text-rose-400 border-rose-700'
+                      }`}
+                    >
+                      {task.testResults.passed ? 'TESTS_PASSED' : 'TESTS_FAILED'}
+                    </span>
+                    <span className="text-zinc-200 font-bold">{task.testResults.command}</span>
                   </div>
-                  <span className="text-[11px] text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/60 font-mono">
-                    {task.testResults.durationMs}ms duration
-                  </span>
+                  <div className="flex items-center gap-3 text-[10px] text-zinc-400">
+                    <span>EXIT_STATUS: {task.testResults.passed ? '0 (OK)' : '1 (FAIL)'}</span>
+                    <span>DURATION: {task.testResults.durationMs}ms</span>
+                  </div>
                 </div>
 
-                {/* Terminal Window Box */}
-                <div className="rounded-xl border border-pebble-800 bg-pebble-950 overflow-hidden shadow-inner">
-                  <div className="flex items-center gap-1.5 px-4 py-2 bg-pebble-900/90 border-b border-pebble-800/80">
-                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                    <span className="ml-2 text-[11px] text-pebble-400 font-mono">
-                      bash ~/workspace-sandbox/tests
-                    </span>
+                <div className="border border-zinc-800 bg-zinc-950">
+                  <div className="px-3 py-1 bg-zinc-900 border-b border-zinc-800 text-[10px] text-zinc-500">
+                    STDOUT / STDERR EXECUTION LOG
                   </div>
-                  <pre className="p-4 text-emerald-400/90 text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto selection:bg-emerald-500/30">
-                    {task.testResults.stdout || task.testResults.stderr || 'No stdout/stderr recorded'}
+                  <pre className="p-3 text-emerald-400/90 text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto selection:bg-emerald-950">
+                    {task.testResults.stdout || task.testResults.stderr || 'NO_STDOUT_RECORDED'}
                   </pre>
                 </div>
               </div>
@@ -290,33 +230,34 @@ export const TaskOutput: React.FC<TaskOutputProps> = ({ task }) => {
 
         {/* EVIDENCE TRAIL TAB */}
         {tab === 'evidence' && (
-          <div className="space-y-2.5 font-mono text-xs">
+          <div className="space-y-1.5 font-mono text-xs">
             {task.evidence.length === 0 ? (
-              <div className="h-44 flex items-center justify-center text-pebble-500 text-xs italic">
-                No cryptographic or tool evidence captured yet.
+              <div className="h-40 flex items-center justify-center text-zinc-600 italic">
+                NO_EVIDENCE_ITEMS_CAPTURED
               </div>
             ) : (
               task.evidence.map((evi) => (
                 <div
                   key={evi.id}
-                  className="p-3.5 rounded-xl bg-pebble-900/40 border border-pebble-800/60 hover:border-pebble-700/80 transition-all space-y-2 shadow-sm"
+                  className="p-2.5 border border-zinc-800 bg-zinc-950 space-y-1 text-[11px]"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-zinc-400">
                     <div className="flex items-center gap-2">
-                      <span className="capitalize font-semibold text-white">{evi.agent} Pebble</span>
-                      <span className="text-pebble-500">invoked</span>
-                      <code className="text-cyan-300 bg-pebble-950 px-1.5 py-0.5 rounded border border-pebble-800 text-[11px]">
+                      <span className="uppercase font-bold text-zinc-200">
+                        [{evi.agent}_AGENT]
+                      </span>
+                      <span className="text-zinc-600">USED</span>
+                      <code className="text-zinc-300 bg-zinc-900 px-1 border border-zinc-800 text-[10px]">
                         {evi.tool}
                       </code>
                     </div>
-                    <span className="text-[10px] text-pebble-500">
+                    <span className="text-[10px] text-zinc-500">
                       {new Date(evi.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
-                  <p className="text-pebble-300 text-xs font-sans leading-relaxed">{evi.observation}</p>
-                  <div className="text-[11px] text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-950/30 p-2 rounded-lg border border-emerald-900/40">
-                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                    <span>Supported Claim: {evi.supportedClaim}</span>
+                  <p className="text-zinc-300 font-sans text-xs">{evi.observation}</p>
+                  <div className="text-[10px] text-emerald-400 border border-emerald-900/60 bg-emerald-950/20 p-1.5">
+                    CLAIM_VERIFIED: {evi.supportedClaim}
                   </div>
                 </div>
               ))

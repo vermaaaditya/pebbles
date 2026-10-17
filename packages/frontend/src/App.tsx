@@ -111,7 +111,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-pebble-950 font-sans text-pebble-100">
+    <div className="flex h-screen w-screen overflow-hidden bg-zinc-950 font-mono text-zinc-100">
       <Sidebar
         tasks={tasks}
         activeTaskId={activeTaskId}

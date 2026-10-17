@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Search, Hammer, ShieldAlert, ShieldCheck, Zap } from 'lucide-react';
+import { Terminal, Shield, Hammer, Search, Compass } from 'lucide-react';
 
 interface TeammateRosterProps {
   currentAgent?: string;
@@ -9,114 +9,84 @@ export const TeammateRoster: React.FC<TeammateRosterProps> = ({ currentAgent }) 
   const teammates = [
     {
       role: 'lead',
+      code: 'AGENT:01',
       name: 'Lead Pebble',
       title: 'Workforce Architect',
-      description: 'Understands objective, synthesizes execution plan, delegates subtasks, and certifies reports.',
-      scope: 'Coordination & Reporting',
-      permissions: ['Plan Synthesis', 'Task Delegation', 'Final Certification'],
+      description: 'Synthesizes plan, delegates subtasks, and certifies final governance report.',
+      scope: 'COORDINATION & REPORTING',
+      permissions: ['plan_synthesis', 'subtask_delegation', 'final_audit'],
       icon: Compass,
-      color: 'text-violet-400',
-      bgColor: 'bg-violet-950/40',
-      borderColor: 'border-violet-500/30',
-      accentGlow: 'shadow-violet-500/20',
     },
     {
       role: 'research',
+      code: 'AGENT:02',
       name: 'Research Pebble',
       title: 'Context & Security Analyst',
-      description: 'Inspects repository layout, searches symbols, and verifies test assertions. Strict read-only.',
-      scope: 'Read-Only Inspection',
+      description: 'Read-only inspection of repository layout, symbols, and tests.',
+      scope: 'READ-ONLY INSPECTION',
       permissions: ['list_files', 'read_file', 'search_files'],
-      restricted: ['write_file', 'run_tests'],
+      restricted: 'WRITE_BLOCKED',
       icon: Search,
-      color: 'text-cyan-400',
-      bgColor: 'bg-cyan-950/40',
-      borderColor: 'border-cyan-500/30',
-      accentGlow: 'shadow-cyan-500/20',
     },
     {
       role: 'builder',
+      code: 'AGENT:03',
       name: 'Builder Pebble',
       title: 'Sandbox Engineer',
-      description: 'Applies verified bugfixes within sandbox and executes permitted test suites.',
-      scope: 'Sandboxed Modification & Tests',
+      description: 'Applies verified changes within sandbox and executes permitted test suites.',
+      scope: 'SANDBOXED MODIFICATION & TESTS',
       permissions: ['read_file', 'write_file', 'run_tests'],
-      restricted: ['Path Traversal', 'Secrets Access'],
+      restricted: 'TRAVERSAL_BLOCKED',
       icon: Hammer,
-      color: 'text-amber-400',
-      bgColor: 'bg-amber-950/40',
-      borderColor: 'border-amber-500/30',
-      accentGlow: 'shadow-amber-500/20',
     },
   ];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between px-1">
-        <h3 className="text-[11px] font-semibold text-pebble-400 uppercase tracking-wider font-mono">
-          Governed Workforce
+    <div className="space-y-2">
+      <div className="flex items-center justify-between px-0.5 border-b border-zinc-800 pb-1.5">
+        <h3 className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+          Workforce Roster
         </h3>
-        <span className="text-[10px] bg-pebble-900 text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-800/40 font-mono">
-          3 Agents
-        </span>
+        <span className="text-[10px] font-mono text-zinc-500">[3 ACTIVE]</span>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-1.5">
         {teammates.map((tm) => {
-          const Icon = tm.icon;
           const isActive = currentAgent === tm.role;
 
           return (
             <div
               key={tm.role}
-              className={`p-3 rounded-xl border transition-all duration-200 relative overflow-hidden ${
+              className={`p-2.5 border transition-none font-mono ${
                 isActive
-                  ? `${tm.bgColor} ${tm.borderColor} ring-1 ring-cyan-500/40 shadow-lg ${tm.accentGlow}`
-                  : 'bg-pebble-900/40 border-pebble-800/80 hover:bg-pebble-900/70 hover:border-pebble-700'
+                  ? 'bg-zinc-900 border-zinc-500 text-zinc-100'
+                  : 'bg-zinc-950 border-zinc-800/80 text-zinc-400 hover:border-zinc-700'
               }`}
             >
-              {/* Active top subtle accent line */}
-              {isActive && (
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-violet-400 to-transparent" />
-              )}
-
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`p-2 rounded-lg ${tm.bgColor} ${tm.color} border ${tm.borderColor} shadow-inner shrink-0`}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-white tracking-tight">{tm.name}</span>
-                      {isActive && (
-                        <span className="flex items-center gap-1 text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded font-mono border border-cyan-500/40 animate-pulse">
-                          <Zap className="w-2.5 h-2.5 fill-current" />
-                          Executing
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] text-pebble-400 block">{tm.title}</span>
-                  </div>
+              <div className="flex items-center justify-between text-xs mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-zinc-500 font-bold">{tm.code}</span>
+                  <span className="font-semibold text-zinc-200">{tm.name}</span>
                 </div>
+                {isActive ? (
+                  <span className="text-[9px] bg-cyan-950 text-cyan-300 border border-cyan-700 px-1 uppercase tracking-wider">
+                    RUNNING
+                  </span>
+                ) : (
+                  <span className="text-[9px] text-zinc-600 uppercase">IDLE</span>
+                )}
               </div>
 
-              <p className="text-[11px] text-pebble-300 mt-2 leading-relaxed">
+              <div className="text-[11px] text-zinc-400 font-sans leading-tight mt-1">
                 {tm.description}
-              </p>
+              </div>
 
-              {/* Scope & Restrictions badges */}
-              <div className="mt-2.5 pt-2 border-t border-pebble-800/60 flex items-center justify-between text-[10px] font-mono">
-                <div className="flex items-center gap-1 text-emerald-400 truncate max-w-[160px]" title={tm.scope}>
-                  <ShieldCheck className="w-3 h-3 shrink-0" />
-                  <span className="truncate">{tm.scope}</span>
-                </div>
+              <div className="mt-2 pt-1.5 border-t border-zinc-900 flex items-center justify-between text-[10px] text-zinc-500">
+                <span className="text-zinc-400 truncate max-w-[150px]">{tm.scope}</span>
                 {tm.restricted && (
-                  <div className="flex items-center gap-1 text-rose-400 shrink-0">
-                    <ShieldAlert className="w-3 h-3" />
-                    <span>No Writes</span>
-                  </div>
+                  <span className="text-rose-400 font-mono text-[9px] border border-rose-900/60 px-1 bg-rose-950/20">
+                    {tm.restricted}
+                  </span>
                 )}
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, ShieldCheck, ShieldAlert, Cpu, Terminal, Layers, Search, Sparkles } from 'lucide-react';
+import { Plus, Shield, Terminal, Cpu, Search } from 'lucide-react';
 import { TaskRecord, HealthInfo } from '../api/client';
 import { StatusBadge } from './StatusBadge';
 import { TeammateRoster } from './TeammateRoster';
@@ -30,101 +30,77 @@ export const Sidebar: React.FC<SidebarProps> = ({
   );
 
   return (
-    <aside className="w-80 bg-pebble-900/90 backdrop-blur-md border-r border-pebble-800/80 flex flex-col h-screen select-none z-10">
+    <aside className="w-80 bg-zinc-950 border-r border-zinc-800 flex flex-col h-screen select-none font-mono">
       {/* Brand Header */}
-      <div className="p-4 border-b border-pebble-800/80">
+      <div className="p-4 border-b border-zinc-800">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-cyan-500/20 ring-1 ring-white/20">
-              <span className="font-mono font-black text-white text-base tracking-tighter">P</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold text-white tracking-tight">Pebbles</h1>
-                <span className="text-[10px] bg-cyan-950 text-cyan-300 font-mono px-1.5 py-0.5 rounded border border-cyan-800/60 font-semibold">
-                  v0.1
-                </span>
-              </div>
-              <p className="text-[11px] text-pebble-400">Governed AI Workforce</p>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 bg-zinc-100 inline-block" />
+            <h1 className="text-xs font-bold text-zinc-100 tracking-wider uppercase">
+              PEBBLES // KERNEL
+            </h1>
           </div>
+          <span className="text-[10px] text-zinc-400 border border-zinc-700 px-1.5 py-0.2 bg-zinc-900">
+            v0.1.0
+          </span>
         </div>
 
-        {/* Governance Mode Pill */}
-        <div className="mt-3.5 p-2.5 rounded-xl bg-pebble-950/70 border border-pebble-800/80 flex items-center justify-between text-xs transition-colors hover:border-pebble-700">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {isArmorIQ ? (
-              isConfigured ? (
-                <div className="p-1.5 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 shrink-0">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-              ) : (
-                <div className="p-1.5 rounded-lg bg-amber-950 text-amber-400 border border-amber-500/30 shrink-0">
-                  <ShieldAlert className="w-4 h-4" />
-                </div>
-              )
-            ) : (
-              <div className="p-1.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/30 shrink-0">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-            )}
-            <div className="min-w-0">
-              <div className="font-medium text-pebble-200 text-xs truncate">
-                {isArmorIQ ? 'ArmorIQ Production' : 'Local Policy Engine'}
-              </div>
-              <div className="text-[10px] text-pebble-400 truncate font-mono">
-                {isArmorIQ
-                  ? isConfigured
-                    ? 'Cryptographic Ed25519 Verified'
-                    : 'Fail-closed active (no API key)'
-                  : 'Explicit Local Dev (Safe)'}
-              </div>
-            </div>
+        {/* Governance Mode */}
+        <div className="mt-3 p-2 bg-zinc-900/80 border border-zinc-800 text-[11px] leading-tight">
+          <div className="flex items-center justify-between text-zinc-300">
+            <span className="text-zinc-500 text-[10px]">AUTH_GATE:</span>
+            <span className="font-semibold text-zinc-200 uppercase">
+              {isArmorIQ ? 'ARMORIQ [ED25519]' : 'LOCAL_POLICY'}
+            </span>
+          </div>
+          <div className="text-[10px] text-zinc-500 mt-1">
+            {isArmorIQ
+              ? isConfigured
+                ? 'VERIFIED CRYPTOGRAPHIC GATE'
+                : 'FAIL-CLOSED: MISSING KEY'
+              : 'DEV_MODE: NO CRYPTO VERIFY'}
           </div>
         </div>
       </div>
 
-      {/* New Task Button */}
-      <div className="p-3 border-b border-pebble-800/60">
+      {/* New Task Action */}
+      <div className="p-3 border-b border-zinc-800">
         <button
           onClick={onNewTask}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-pebble-950 font-semibold text-xs tracking-tight transition-all shadow-md shadow-cyan-500/20 active:scale-[0.98]"
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs uppercase tracking-wider transition-none border border-zinc-200 active:translate-y-px"
         >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>New Governed Task</span>
+          <Plus className="w-3.5 h-3.5 stroke-[3]" />
+          <span>INITIALIZE TASK</span>
         </button>
       </div>
 
-      {/* Middle Content: Task History + Teammates */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-5 custom-scrollbar">
+      {/* Task History + Workforce */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-4 custom-scrollbar">
         {/* Previous Tasks */}
         <div>
-          <div className="flex items-center justify-between px-1 mb-2">
-            <span className="text-[11px] font-semibold text-pebble-400 uppercase tracking-wider font-mono">
-              Task History
+          <div className="flex items-center justify-between px-0.5 mb-2 border-b border-zinc-900 pb-1">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              TASK LOG
             </span>
-            <span className="text-[10px] bg-pebble-800 text-pebble-400 px-1.5 py-0.5 rounded font-mono">
-              {tasks.length}
-            </span>
+            <span className="text-[10px] text-zinc-500">[{tasks.length}]</span>
           </div>
 
           {tasks.length > 3 && (
-            <div className="mb-2.5 relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-pebble-500" />
+            <div className="mb-2">
               <input
                 type="text"
-                placeholder="Filter tasks..."
+                placeholder="grep tasks..."
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="w-full bg-pebble-950 border border-pebble-800 rounded-lg pl-8 pr-2 py-1.5 text-xs text-pebble-200 placeholder-pebble-600 focus:outline-none focus:border-cyan-500/50"
+                className="w-full bg-zinc-900 border border-zinc-800 px-2 py-1 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-500 rounded-none"
               />
             </div>
           )}
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {filteredTasks.length === 0 ? (
-              <div className="p-4 text-center border border-dashed border-pebble-800/80 rounded-xl text-xs text-pebble-500">
-                {tasks.length === 0 ? 'No tasks yet. Create one above.' : 'No matching tasks.'}
+              <div className="p-3 text-center border border-zinc-900 text-zinc-600 text-xs">
+                {tasks.length === 0 ? 'NO TASKS IN QUEUE' : 'NO MATCH FOUND'}
               </div>
             ) : (
               filteredTasks.map((t) => {
@@ -133,23 +109,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={t.id}
                     onClick={() => onSelectTask(t.id)}
-                    className={`w-full text-left p-3 rounded-xl border transition-all duration-150 ${
+                    className={`w-full text-left p-2.5 border transition-none block ${
                       isSelected
-                        ? 'bg-pebble-800/90 border-cyan-500/40 text-white shadow-md shadow-pebble-950/40 ring-1 ring-cyan-500/20'
-                        : 'bg-pebble-950/40 border-pebble-800/60 text-pebble-300 hover:bg-pebble-800/40 hover:text-white hover:border-pebble-700'
+                        ? 'bg-zinc-900 border-zinc-400 text-zinc-100'
+                        : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-medium line-clamp-2 leading-snug">
-                        {t.prompt}
-                      </p>
-                    </div>
-                    <div className="mt-2.5 flex items-center justify-between text-[10px] text-pebble-500 font-mono">
-                      <span>{new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      <div className="flex items-center gap-1.5">
-                        <span>{t.subtasks.length} subtasks</span>
-                        <StatusBadge status={t.status} size="sm" />
-                      </div>
+                    <p className="text-xs line-clamp-2 leading-snug font-sans text-zinc-300">
+                      {t.prompt}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                      <span>{new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                      <StatusBadge status={t.status} size="sm" />
                     </div>
                   </button>
                 );
@@ -162,25 +133,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <TeammateRoster currentAgent={currentAgent} />
       </div>
 
-      {/* Footer Diagnostic Bar */}
-      <div className="p-3 border-t border-pebble-800 bg-pebble-950/90 text-[11px] text-pebble-400 font-mono space-y-1.5">
+      {/* Diagnostics Terminal Bar */}
+      <div className="p-3 border-t border-zinc-800 bg-zinc-950 text-[10px] text-zinc-400 font-mono space-y-1">
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-pebble-400">
-            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-            MCP Server:
-          </span>
-          <span className={`flex items-center gap-1 ${health?.mcp.connected ? 'text-emerald-400' : 'text-pebble-500'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${health?.mcp.connected ? 'bg-emerald-400 animate-pulse' : 'bg-pebble-600'}`} />
-            {health?.mcp.connected ? `Connected (${health.mcp.availableToolsCount} tools)` : 'Offline'}
+          <span className="text-zinc-500">MCP_SERVER:</span>
+          <span className={health?.mcp.connected ? 'text-emerald-400' : 'text-zinc-600'}>
+            {health?.mcp.connected ? `ONLINE [${health.mcp.availableToolsCount}_TOOLS]` : 'OFFLINE'}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-pebble-400">
-            <Cpu className="w-3.5 h-3.5 text-violet-400" />
-            LLM Engine:
-          </span>
-          <span className="text-pebble-300 truncate max-w-[140px]" title={health?.llm.provider}>
-            {health?.llm.isLiveConfigured ? 'Groq / Llama 3.3' : 'Fallback Engine'}
+          <span className="text-zinc-500">LLM_PROVIDER:</span>
+          <span className="text-zinc-300 truncate max-w-[150px]">
+            {health?.llm.isLiveConfigured ? 'GROQ_LLAMA_3.3' : 'FALLBACK_ENGINE'}
           </span>
         </div>
       </div>

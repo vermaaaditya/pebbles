@@ -1,19 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Play,
-  Square,
-  Sparkles,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  Compass,
-  Search,
-  Hammer,
-  Layers,
-  ChevronRight,
-  ShieldCheck,
-  Bug,
-} from 'lucide-react';
+import { Play, Square, Terminal, Shield, Check, Clock, AlertCircle } from 'lucide-react';
 import { TaskRecord, Subtask } from '../api/client';
 import { StatusBadge } from './StatusBadge';
 import { HoldApprovalModal } from './HoldApprovalModal';
@@ -31,18 +17,15 @@ interface TaskWorkspaceProps {
 
 const PROMPT_PRESETS = [
   {
-    label: 'Fix Calculation Bug',
-    icon: Bug,
+    tag: 'FIX_BUG',
     text: 'Inspect this repository, investigate a bug, implement a fix, run the available tests, and prepare the changes for review.',
   },
   {
-    label: 'Audit Sandbox Security',
-    icon: ShieldCheck,
+    tag: 'AUDIT_SECURITY',
     text: 'Audit workspace file layout and verify read-only boundaries are enforced before writing any modifications.',
   },
   {
-    label: 'Execute Test Suite',
-    icon: Sparkles,
+    tag: 'EXECUTE_TESTS',
     text: 'Run the existing test suite, analyze any failing test cases, and produce an evidence log.',
   },
 ];
@@ -75,110 +58,80 @@ export const TaskWorkspace: React.FC<TaskWorkspaceProps> = ({
     (a) => a.decision === 'HOLD' && a.executionStatus === 'held'
   );
 
-  const getAgentIcon = (agent: string) => {
-    if (agent === 'research') return <Search className="w-3.5 h-3.5 text-cyan-400" />;
-    if (agent === 'builder') return <Hammer className="w-3.5 h-3.5 text-amber-400" />;
-    return <Compass className="w-3.5 h-3.5 text-violet-400" />;
-  };
-
-  const getSubtaskStatusIcon = (status: Subtask['status']) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />;
-      case 'in_progress':
-        return (
-          <div className="w-4 h-4 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin shrink-0" />
-        );
-      case 'failed':
-        return <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />;
-      default:
-        return <Clock className="w-4 h-4 text-pebble-600 shrink-0" />;
-    }
-  };
-
-  // Progress metrics
+  // Subtask metrics
   const completedCount = task?.subtasks.filter((s) => s.status === 'completed').length || 0;
   const totalCount = task?.subtasks.length || 0;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-pebble-950">
-      {/* Top Header & Task Input Form */}
-      <div className="p-5 border-b border-pebble-800/80 bg-pebble-900/40 backdrop-blur-sm space-y-4">
+    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-zinc-950 font-mono">
+      {/* Top Header & Task Dispatcher */}
+      <div className="p-4 border-b border-zinc-800 bg-zinc-950 space-y-3">
         <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-base font-bold text-white tracking-tight">
-                Workforce Orchestration
-              </h2>
-              {task && <StatusBadge status={task.status} />}
-            </div>
-            <p className="text-xs text-pebble-400 mt-0.5">
-              Autonomous multi-agent execution governed by ArmorIQ authorization gates.
-            </p>
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500 text-xs font-bold">[CONSOLE]</span>
+            <h2 className="text-sm font-bold text-zinc-100 tracking-wider uppercase">
+              WORKFORCE EXECUTION CONTROLLER
+            </h2>
+            {task && <StatusBadge status={task.status} />}
           </div>
 
           {task && (task.status === 'running' || task.status === 'held' || task.status === 'planning') && (
             <button
               onClick={() => onAbortTask(task.id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 text-xs font-medium transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1 bg-rose-950/60 border border-rose-700 text-rose-300 hover:bg-rose-900 text-xs uppercase font-bold tracking-wider transition-none"
             >
-              <Square className="w-3.5 h-3.5" />
-              <span>Abort Task</span>
+              <Square className="w-3 h-3 fill-current" />
+              <span>ABORT_PROCESS</span>
             </button>
           )}
         </div>
 
-        {/* Input Form with Glass Texture */}
-        <form onSubmit={handleSubmit} className="space-y-2.5">
-          <div className="relative group">
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <div className="relative border border-zinc-800 bg-zinc-900/60 focus-within:border-zinc-500">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-zinc-800/80 text-[10px] text-zinc-500 bg-zinc-950/80">
+              <span>PROMPT_DISPATCHER // STDIN</span>
+              <span>PRESS [CTRL + ENTER] TO SUBMIT</span>
+            </div>
             <textarea
               rows={2}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Describe the software engineering task for Pebbles workforce..."
-              className="w-full bg-pebble-950/80 border border-pebble-800 rounded-xl px-4 py-3 text-xs sm:text-sm text-pebble-100 placeholder-pebble-600 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all resize-none shadow-inner custom-scrollbar"
+              placeholder="Enter software engineering instructions for Pebbles workforce..."
+              className="w-full bg-transparent px-3 py-2 text-xs sm:text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none resize-none font-mono custom-scrollbar"
             />
-            <div className="absolute right-3 bottom-3 flex items-center gap-2">
-              <span className="hidden sm:inline-block text-[10px] text-pebble-500 font-mono px-1.5 py-0.5 rounded bg-pebble-900 border border-pebble-800">
-                Ctrl + Enter
-              </span>
+            <div className="flex items-center justify-between p-2 border-t border-zinc-800/60 bg-zinc-950/40">
+              {/* Presets */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] text-zinc-500 uppercase">PRESETS:</span>
+                {PROMPT_PRESETS.map((preset) => (
+                  <button
+                    key={preset.tag}
+                    type="button"
+                    onClick={() => setPrompt(preset.text)}
+                    className="px-2 py-0.5 border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 text-zinc-300 text-[10px] uppercase transition-none"
+                  >
+                    [{preset.tag}]
+                  </button>
+                ))}
+              </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading || !prompt.trim()}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-pebble-950 text-xs font-semibold shadow-md shadow-cyan-500/20 disabled:opacity-40 transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 text-xs uppercase font-bold tracking-wider border border-zinc-200 disabled:opacity-40 transition-none"
               >
                 {isLoading ? (
-                  <div className="w-3.5 h-3.5 rounded-full border-2 border-pebble-950 border-t-transparent animate-spin" />
+                  <div className="w-3 h-3 border-2 border-zinc-950 border-t-transparent animate-spin" />
                 ) : (
                   <Play className="w-3 h-3 fill-current" />
                 )}
-                <span>Delegate to Workforce</span>
+                <span>DISPATCH_TASK</span>
               </button>
             </div>
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-pebble-500 flex items-center gap-1 font-mono">
-              <Sparkles className="w-3 h-3 text-cyan-400" />
-              Presets:
-            </span>
-            {PROMPT_PRESETS.map((preset) => {
-              const Icon = preset.icon;
-              return (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => setPrompt(preset.text)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium bg-pebble-900/60 hover:bg-pebble-800/80 text-pebble-300 hover:text-white border border-pebble-800 transition-all active:scale-95"
-                >
-                  <Icon className="w-3 h-3 text-cyan-400" />
-                  <span>{preset.label}</span>
-                </button>
-              );
-            })}
           </div>
         </form>
 
@@ -193,88 +146,86 @@ export const TaskWorkspace: React.FC<TaskWorkspaceProps> = ({
       </div>
 
       {/* Main Workspace Body */}
-      <div className="flex-1 overflow-y-auto p-5 grid grid-cols-12 gap-5 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 grid grid-cols-12 gap-4 custom-scrollbar">
         {/* Left Column: Plan & Subtasks (5 cols) */}
         <div className="col-span-12 lg:col-span-5 flex flex-col space-y-4">
-          <div className="p-4 rounded-xl border border-pebble-800/80 bg-pebble-900/40 backdrop-blur-sm space-y-3 shadow-sm">
-            <div className="flex items-center justify-between border-b border-pebble-800/80 pb-2.5">
-              <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-xs font-semibold text-pebble-200 uppercase tracking-wider font-mono">
-                  Plan & Delegated Subtasks
-                </h3>
-              </div>
+          <div className="p-3.5 border border-zinc-800 bg-zinc-950 space-y-3">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <span className="text-xs font-bold text-zinc-200 uppercase tracking-widest">
+                EXECUTION_PLAN // DELEGATED_PIPELINE
+              </span>
               {task?.subtasks && totalCount > 0 && (
-                <span className="text-[11px] font-mono text-cyan-400">
-                  {completedCount}/{totalCount} Completed ({progressPercent}%)
+                <span className="text-[10px] text-zinc-400">
+                  [{completedCount}/{totalCount} COMPLETED - {progressPercent}%]
                 </span>
               )}
             </div>
 
-            {/* Subtask Progress Bar */}
+            {/* Brutalist linear progress bar */}
             {task && totalCount > 0 && (
-              <div className="w-full bg-pebble-950 rounded-full h-1.5 overflow-hidden border border-pebble-800/60">
+              <div className="w-full bg-zinc-900 h-1 border border-zinc-800">
                 <div
-                  className="bg-gradient-to-r from-cyan-500 to-emerald-400 h-full transition-all duration-500"
+                  className="bg-zinc-200 h-full transition-all"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
             )}
 
             {!task?.plan ? (
-              <div className="h-44 flex flex-col items-center justify-center text-pebble-500 text-xs gap-2 italic">
-                <Compass className="w-6 h-6 text-pebble-700" />
-                <span>Lead Pebble will synthesize a structured plan here.</span>
+              <div className="h-40 flex items-center justify-center text-zinc-600 text-xs border border-zinc-900 border-dashed">
+                AWAITING TASK DISPATCH TO SYNTHESIZE PLAN...
               </div>
             ) : (
-              <div className="space-y-2.5">
-                <div className="p-2.5 rounded-lg bg-pebble-950/80 border border-pebble-800 text-xs">
-                  <span className="text-cyan-400 font-mono font-medium">Goal: </span>
-                  <span className="text-pebble-200">{task.plan.goal}</span>
+              <div className="space-y-2">
+                <div className="p-2 bg-zinc-900 border border-zinc-800 text-xs">
+                  <span className="text-zinc-500 font-bold uppercase mr-1">[GOAL]:</span>
+                  <span className="text-zinc-200 font-sans">{task.plan.goal}</span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {task.subtasks.map((st, idx) => {
                     const isCurrent = task.currentSubtaskId === st.id;
+                    const isDone = st.status === 'completed';
+                    const isFail = st.status === 'failed';
+
                     return (
                       <div
                         key={st.id}
-                        className={`p-3 rounded-xl border text-xs transition-all duration-200 ${
+                        className={`p-2.5 border text-xs transition-none ${
                           isCurrent
-                            ? 'bg-cyan-950/30 border-cyan-500/50 ring-1 ring-cyan-500/30 shadow-md shadow-cyan-950/30'
-                            : st.status === 'completed'
-                            ? 'bg-pebble-900/60 border-pebble-800'
-                            : 'bg-pebble-950/60 border-pebble-800/60'
+                            ? 'bg-zinc-900 border-zinc-400 text-zinc-100'
+                            : isDone
+                            ? 'bg-zinc-950 border-zinc-800 text-zinc-300'
+                            : 'bg-zinc-950 border-zinc-900 text-zinc-500'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-start gap-2.5">
-                            {getSubtaskStatusIcon(st.status)}
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-pebble-200">
-                                  {idx + 1}. {st.title}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-1.5 mt-1 text-[11px] text-pebble-400">
-                                {getAgentIcon(st.agent)}
-                                <span className="capitalize font-mono">{st.agent} Pebble</span>
-                              </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-zinc-500 font-bold">
+                                [STEP 0{idx + 1}]
+                              </span>
+                              <span className="font-semibold text-zinc-200 font-sans">
+                                {st.title}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-zinc-500 uppercase mt-0.5">
+                              DELEGATED_TO: {st.agent} Pebble
                             </div>
                           </div>
                           <StatusBadge status={st.status} size="sm" />
                         </div>
 
                         {st.findings && (
-                          <div className="mt-2.5 pt-2 border-t border-pebble-800/60 text-[11px] text-pebble-300">
-                            <span className="text-emerald-400 font-mono font-semibold">Observed: </span>
+                          <div className="mt-2 pt-1.5 border-t border-zinc-900 text-[11px] text-zinc-300 font-sans">
+                            <span className="text-emerald-400 font-mono font-bold mr-1">[OBSERVED]:</span>
                             {st.findings}
                           </div>
                         )}
 
                         {st.error && (
-                          <div className="mt-2.5 pt-2 border-t border-pebble-800/60 text-[11px] text-rose-300">
-                            <span className="text-rose-400 font-mono font-semibold">Error: </span>
+                          <div className="mt-2 pt-1.5 border-t border-zinc-900 text-[11px] text-rose-300 font-sans">
+                            <span className="text-rose-400 font-mono font-bold mr-1">[ERROR]:</span>
                             {st.error}
                           </div>
                         )}
@@ -301,8 +252,8 @@ export const TaskWorkspace: React.FC<TaskWorkspaceProps> = ({
             {task ? (
               <TaskOutput task={task} />
             ) : (
-              <div className="h-full flex items-center justify-center p-8 bg-pebble-950/60 border border-pebble-800/80 rounded-xl text-pebble-500 text-xs italic">
-                Task output, changed files, test results, and final report will be displayed here.
+              <div className="h-full flex items-center justify-center p-8 bg-zinc-950 border border-zinc-900 text-zinc-600 text-xs">
+                AWAITING WORKFORCE EXECUTION DATA...
               </div>
             )}
           </div>
